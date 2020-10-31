@@ -1,7 +1,7 @@
 # Feversi
 A Reversi application that covers the basics of cross-platform development using [Flutter](https://flutter.dev/) and [Dart](https://dart.dev/), which is based on an AI project applying algorithms of Adversarial Search.
 
-Thanks filipvk for your game code
+Thanks filipvk for the game code
 
 ## Preview
 ![Start](screenshots/start.gif)
