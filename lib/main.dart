@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
-
 import 'widgets/score_board.dart';
 import 'widgets/board.dart';
 import 'widgets/footer.dart';
-
 import 'model/board_model.dart';
 import 'model/misc.dart';
-
 import 'constants/constants.dart';
 import 'utils/utils.dart';
 
@@ -41,7 +38,6 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-
     _initGame();
   }
 

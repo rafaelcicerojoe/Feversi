@@ -20,7 +20,7 @@ class Board extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (!_model.isValid()) return Container();
-    
+
     return Container(
       padding: EdgeInsets.all(GameConfig.boardPadding),
       decoration: BoxDecoration(
@@ -32,15 +32,15 @@ class Board extends StatelessWidget {
         children: List.generate(
           _model.size,
           (x) => Column(
-                mainAxisSize: MainAxisSize.min,
-                children: List.generate(
-                  _model.size,
-                  (y) => BoardCell(
-                        stoneType: _model.getAt(BoardCoordinates(x, y)),
-                        onPressed: () => _onTapCell(BoardCoordinates(x, y)),
-                      ),
-                ),
+            mainAxisSize: MainAxisSize.min,
+            children: List.generate(
+              _model.size,
+              (y) => BoardCell(
+                stoneType: _model.getAt(BoardCoordinates(x, y)),
+                onPressed: () => _onTapCell(BoardCoordinates(x, y)),
               ),
+            ),
+          ),
         ),
       ),
     );

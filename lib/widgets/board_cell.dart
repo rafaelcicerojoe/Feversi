@@ -1,10 +1,7 @@
 import 'package:flutter/animation.dart';
 import 'package:flutter/material.dart';
-
 import 'stone.dart';
-
 import '../model/misc.dart';
-
 import '../constants/constants.dart';
 
 double getMaxCellSizeByScreenWidth(screenWidth) {
@@ -69,16 +66,16 @@ class _BoardCellState extends State<BoardCell>
       child: new AnimatedBuilder(
         animation: _blinkAnimation,
         builder: (context, child) => Container(
-              constraints:
-                  BoxConstraints(maxWidth: maxCellSize, maxHeight: maxCellSize),
-              width: defaultCellSize,
-              height: defaultCellSize,
-              margin: EdgeInsets.all(GameConfig.boardCellMargin),
-              padding: EdgeInsets.all(GameConfig.boardCellPadding),
-              color: _blinkAnimation.value,
-              alignment: Alignment.center,
-              child: Stone(type: widget.stoneType),
-            ),
+          constraints:
+              BoxConstraints(maxWidth: maxCellSize, maxHeight: maxCellSize),
+          width: defaultCellSize,
+          height: defaultCellSize,
+          margin: EdgeInsets.all(GameConfig.boardCellMargin),
+          padding: EdgeInsets.all(GameConfig.boardCellPadding),
+          color: _blinkAnimation.value,
+          alignment: Alignment.center,
+          child: Stone(type: widget.stoneType),
+        ),
       ),
     );
   }
