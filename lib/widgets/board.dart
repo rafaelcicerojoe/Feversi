@@ -36,9 +36,9 @@ class Board extends StatelessWidget {
             children: List.generate(
               _model.size,
               (y) => BoardCell(
-                stoneType: _model.getAt(BoardCoordinates(x, y)),
-                onPressed: () => _onTapCell(BoardCoordinates(x, y)),
-              ),
+                  stoneType: _model.getAt(BoardCoordinates(x, y)),
+                  onPressed: () => _onTapCell(BoardCoordinates(x, y)),
+                  currentStone: _model.currentStone),
             ),
           ),
         ),

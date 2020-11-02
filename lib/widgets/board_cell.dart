@@ -15,10 +15,13 @@ double getMaxCellSizeByScreenWidth(screenWidth) {
 class BoardCell extends StatefulWidget {
   final StoneType stoneType;
   final VoidCallback onPressed;
+  final StoneType currentStone;
 
-  BoardCell({StoneType stoneType, VoidCallback onPressed})
+  BoardCell(
+      {StoneType stoneType, VoidCallback onPressed, StoneType currentStone})
       : stoneType = stoneType,
-        onPressed = onPressed;
+        onPressed = onPressed,
+        currentStone = currentStone;
 
   _BoardCellState createState() => _BoardCellState();
 }
@@ -47,7 +50,9 @@ class _BoardCellState extends State<BoardCell>
   }
 
   void _playTapAnimation() {
-    if (widget.stoneType != StoneType.empty) return;
+    if (widget.stoneType != StoneType.empty ||
+        widget.currentStone == StoneType.white) return;
+
     _blinkController.forward();
   }
 

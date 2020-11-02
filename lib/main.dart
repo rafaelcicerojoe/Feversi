@@ -14,6 +14,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Reversi',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primarySwatch: createMaterialColor(Color(GameConfig.primaryColor)),
         accentColor: Colors.green,
@@ -47,7 +48,10 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _onTapCell(BoardCoordinates pos) {
     setState(() {
-      _board.putStone(pos);
+      if (_board.currentStone == StoneType.white) return;
+      if (_board.putStone(pos, _board.boardMap) == true) {
+        _board.proceedIA();
+      }
     });
   }
 
@@ -92,17 +96,22 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Visibility(
-              visible: _board.winner == null,
+              visible: _board.winner == null &&
+                  _board.currentStone == StoneType.black,
               child: FloatingActionButton(
                 onPressed: _onSkip,
                 tooltip: 'Skip Turn',
                 child: Icon(Icons.skip_next),
               ),
             ),
-            FloatingActionButton(
-              onPressed: _onRestart,
-              tooltip: 'Restart',
-              child: Icon(Icons.refresh),
+            Visibility(
+              visible: _board.winner != null ||
+                  _board.currentStone == StoneType.black,
+              child: FloatingActionButton(
+                onPressed: _onRestart,
+                tooltip: 'Restart',
+                child: Icon(Icons.refresh),
+              ),
             ),
           ],
         ),

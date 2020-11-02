@@ -1,5 +1,4 @@
 import '../model/misc.dart';
-
 import '../constants/constants.dart';
 
 List<List<StoneType>> getNewBoard(size) {
@@ -9,10 +8,9 @@ List<List<StoneType>> getNewBoard(size) {
   return List.generate(
     size,
     (x) => List.generate(size, (y) {
-          if (x < start || x > end || y < start || y > end)
-            return StoneType.empty;
-          return (x + y) % 2 == 1 ? StoneType.black : StoneType.white;
-        }),
+      if (x < start || x > end || y < start || y > end) return StoneType.empty;
+      return (x + y) % 2 == 1 ? StoneType.black : StoneType.white;
+    }),
   );
 }
 
@@ -43,6 +41,10 @@ class BoardModel {
   int get whiteCount {
     List<StoneType> allStones = _boardMap.expand((column) => column).toList();
     return allStones.where((stone) => stone == StoneType.white).length;
+  }
+
+  List<List<StoneType>> get boardMap {
+    return _boardMap;
   }
 
   bool get isGameOver =>
@@ -87,8 +89,34 @@ class BoardModel {
     return [];
   }
 
-  void _flipStones(List<BoardCoordinates> coordinates) {
-    coordinates.forEach((pos) => _boardMap[pos.x][pos.y] = _currentStone);
+  List<BoardCoordinates> _validMoves([bool inverted = false]) {
+    final List<BoardCoordinates> validPos = [];
+    _boardMap.asMap().forEach((i, line) {
+      line.asMap().forEach((j, cell) {
+        final pos = BoardCoordinates(i, j);
+        if (getAt(pos) != StoneType.empty) return;
+
+        final flipList = List<BoardCoordinates>();
+        FLIP_VECTOR_LIST.forEach((vector) {
+          if (inverted == true) {
+            _flipCurrentStone();
+            flipList.addAll(_getFlipsByVector(pos, vector));
+            _flipCurrentStone();
+          } else {
+            flipList.addAll(_getFlipsByVector(pos, vector));
+          }
+        });
+        if (flipList.isEmpty == false) {
+          validPos.add(pos);
+        }
+      });
+    });
+    return validPos;
+  }
+
+  void _flipStones(
+      List<BoardCoordinates> coordinates, List<List<StoneType>> boardMap) {
+    coordinates.forEach((pos) => boardMap[pos.x][pos.y] = _currentStone);
   }
 
   void _flipCurrentStone() {
@@ -98,7 +126,8 @@ class BoardModel {
       _currentStone = StoneType.black;
   }
 
-  bool putStone(BoardCoordinates pos) {
+  bool putStone(BoardCoordinates pos, List<List<StoneType>> boardMap,
+      [bool skip = true]) {
     if (getAt(pos) != StoneType.empty) return false;
 
     final flipList = List<BoardCoordinates>();
@@ -109,14 +138,103 @@ class BoardModel {
     if (flipList.isEmpty == true) return false;
     flipList.add(pos);
 
-    _flipStones(flipList);
-    _flipCurrentStone();
-
+    _flipStones(flipList, boardMap);
+    if (skip) {
+      _flipCurrentStone();
+    }
     return true;
+  }
+
+  bool isOnCorner(x, y) {
+    return (x == 0 && y == 0) ||
+        (x == 7 && y == 0) ||
+        (x == 0 && y == 7) ||
+        (x == 7 && y == 7);
+  }
+
+  int currentWhiteCount(List<List<StoneType>> boardMap) {
+    List<StoneType> allStones = boardMap.expand((column) => column).toList();
+    return allStones.where((stone) => stone == StoneType.white).length;
+  }
+
+  int currentBlackCount(List<List<StoneType>> boardMap) {
+    List<StoneType> allStones = boardMap.expand((column) => column).toList();
+    return allStones.where((stone) => stone == StoneType.black).length;
+  }
+
+  void proceedIA() {
+    final possibleMoves = _validMoves();
+    print(possibleMoves.length);
+    if (possibleMoves.length == 0) {
+      skipTurn();
+      return;
+    }
+
+    BoardCoordinates bestMove;
+    int simScore = whiteCount - blackCount;
+
+    int bestScore = -500;
+
+    possibleMoves.forEach((pos) {
+      List<List<StoneType>> boardCopied =
+          new List<List<StoneType>>.from(_boardMap.map((value) {
+        return new List<StoneType>.from(value);
+      }));
+
+      int playerScore = proceedPlayer(boardCopied);
+
+      putStone(pos, boardCopied, false);
+
+      if (playerScore == -500) {
+        simScore =
+            currentWhiteCount(boardCopied) - currentBlackCount(boardCopied);
+      } else {
+        simScore = currentWhiteCount(boardCopied) -
+            currentBlackCount(boardCopied) -
+            playerScore;
+      }
+
+      if (simScore > bestScore) {
+        bestScore = simScore;
+        bestMove = pos;
+      }
+    });
+
+    putStone(bestMove, _boardMap);
+  }
+
+  int proceedPlayer(List<List<StoneType>> boardMap) {
+    final possibleMoves = _validMoves(true);
+
+    if (possibleMoves.length == 0) {
+      return -500;
+    }
+
+    int score = whiteCount - blackCount;
+
+    int bestScore = -500;
+
+    possibleMoves.forEach((pos) {
+      List<List<StoneType>> boardCopied =
+          new List<List<StoneType>>.from(boardMap.map((value) {
+        return new List<StoneType>.from(value);
+      }));
+
+      putStone(pos, boardCopied, false);
+
+      score = currentWhiteCount(boardCopied) - currentBlackCount(boardCopied);
+
+      if (score > bestScore) {
+        bestScore = score;
+      }
+    });
+
+    return bestScore;
   }
 
   void skipTurn() {
     _flipCurrentStone();
+    if (_currentStone == StoneType.white) proceedIA();
   }
 
   bool isValid() => _boardMap != null;
