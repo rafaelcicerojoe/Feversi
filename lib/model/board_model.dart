@@ -164,7 +164,7 @@ class BoardModel {
 
   void proceedIA() {
     final possibleMoves = _validMoves();
-    print(possibleMoves.length);
+
     if (possibleMoves.length == 0) {
       skipTurn();
       return;
