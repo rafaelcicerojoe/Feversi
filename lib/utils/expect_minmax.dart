@@ -5,8 +5,7 @@ class Node {
   Node left, right;
 }
 
-// ignore: camel_case_types
-class expecMinMax extends Node {
+class ExpecMinMax extends Node {
 // Initializing Nodes to null
   static Node newNode(int v) {
     Node temp = new Node();
